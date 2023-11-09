@@ -6,13 +6,21 @@ import io
 import base64
 from flask import Flask, request, jsonify
 
-app = Flask(__name)
+app = Flask(__name__)
 
 # Load the face detection classifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 def detect_and_write_on_faces(image):
-    text_to_write = "Happy face, this person has a retention rate of 69%."
+    texts_to_write = [
+        "Happy face, this person has a retention rate of 69.",
+        "Smiling face, spreading positivity!",
+        "Serious face, focused and determined.",
+        "Surprised face, something caught their attention!",
+        "Confused face, deep in thought.",
+        "Excited face, full of energy!",
+        "Calm face, a picture of tranquility."
+    ]
 
     # Convert the uploaded image to grayscale for face detection
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -24,9 +32,11 @@ def detect_and_write_on_faces(image):
     pil_image = PilImage.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(pil_image)
 
-    for (x, y, w, h) in faces:
+    for i, (x, y, w, h) in enumerate(faces):
         # Write text on the detected face
-        draw.text((x, y - 10), text_to_write, fill=(255, 0, 0, 0))
+        if i < len(texts_to_write):
+            text_to_write = texts_to_write[i]
+            draw.text((x, y - 10), text_to_write, fill=(255, 0, 0, 0))
 
     # Convert the Pillow image back to OpenCV format
     image_with_text = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
